@@ -1,4 +1,3 @@
-import "./style.css";
 import { Collapse } from "antd";
 
 const { Panel } = Collapse;

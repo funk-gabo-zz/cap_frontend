@@ -1,16 +1,16 @@
+import axios from "axios";
 import { Box, BoxContainer, Secc, NavButtons } from "./style";
-import {
-  clienteInfo,
-  usuarioInfo,
-  plataformaInfo,
-} from "../../utils/modalInfo";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Table, Button, Modal, Input, Form, Select } from "antd";
-const {Option} = Select;
 
 export const Home = () => {
+  const [cap, setCap] = useState([]);
+  const [client, setClient] = useState([]);
+  const [platform, setPlatform] = useState([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm();
+
+  const { Option } = Select;
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -24,8 +24,65 @@ export const Home = () => {
     setIsModalVisible(false);
   };
 
+  const clienteInfo = () => {
+    Modal.info({
+      title: "Clientes Registrados",
+      content: (
+        <div>
+          <ul>
+            {client.map((cli) => (
+              <li key={cli._id}>{cli.name}</li>
+            ))}
+          </ul>
+        </div>
+      ),
+    });
+  };
+
+  const usuarioInfo = () => {
+    Modal.info({
+      title: "Usuarios Registrados",
+      content: (
+        <div>
+          <ul>
+            <li>Rixion</li>
+            <li>Natalia</li>
+            <li>Gabriel</li>
+          </ul>
+        </div>
+      ),
+    });
+  };
+
+  const plataformaInfo = () => {
+    Modal.info({
+      title: "Plataforma Registrada",
+      content: (
+        <div>
+          <ul>
+            {platform.map(plat => (
+              <li key={plat._id}>{plat.name}</li>
+            ))}
+          </ul>
+        </div>
+      ),
+    });
+  };
+
   const onFinish = (values) => {
+    axios
+      .post("https://warm-temple-82704.herokuapp.com/cap", values)
+      .then(function (response) {
+        form.resetFields();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
     console.log("Success:", values);
+  };
+
+  const handleDelete = (id) => {
+    axios.delete(`https://warm-temple-82704.herokuapp.com/cap/${id}`);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -35,20 +92,52 @@ export const Home = () => {
   const onReset = () => {
     form.resetFields();
   };
-  const dataSource = [
-    {
-      key: "1",
-      cliente: "CRUZDELSUR",
-      usuario: "Someone",
-      plataforma: "Control",
-    },
-    {
-      key: "2",
-      cliente: "Cacciuttolo",
-      usuario: "Rixion",
-      plataforma: "Dispatcher",
-    },
-  ];
+
+  useEffect(() => {
+    axios
+      .get("https://warm-temple-82704.herokuapp.com/cap")
+      .then((response) => {
+        setCap(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [cap]);
+
+  useEffect(() => {
+    axios
+      .get("https://warm-temple-82704.herokuapp.com/platform")
+      .then((response) => {
+        setPlatform(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+  useEffect(() => {
+    axios
+      .get("https://warm-temple-82704.herokuapp.com/client")
+      .then((response) => {
+        setClient(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
+
+  const dataSource = cap.map((capacita) => {
+    return {
+      key: capacita._id,
+      cliente: capacita.client,
+      usuario: capacita.user,
+      plataforma: capacita.platform,
+      action: (
+        <span type="danger" onClick={() => handleDelete(capacita._id)}>
+          Delete
+        </span>
+      ),
+    };
+  });
 
   const columns = [
     {
@@ -66,6 +155,11 @@ export const Home = () => {
       dataIndex: "plataforma",
       key: "plataforma",
     },
+    {
+      title: "Action",
+      dataIndex: "action",
+      key: "action",
+    },
   ];
 
   return (
@@ -73,7 +167,7 @@ export const Home = () => {
       <BoxContainer>
         <Box onClick={clienteInfo}>
           <h1>Clientes</h1>
-          <span>0</span>
+          <span>{client.length}</span>
         </Box>
         <Box onClick={usuarioInfo}>
           <h1>Usuarios</h1>
@@ -81,11 +175,11 @@ export const Home = () => {
         </Box>
         <Box onClick={plataformaInfo}>
           <h1>Plataformas</h1>
-          <span>0</span>
+          <span>{platform.length}</span>
         </Box>
         <Box>
           <h1>Capacitaciones</h1>
-          <span>0</span>
+          <span>{cap.length}</span>
         </Box>
       </BoxContainer>
       <NavButtons>
@@ -97,6 +191,11 @@ export const Home = () => {
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
+        footer={[
+          <Button key="back" onClick={handleCancel}>
+            Close
+          </Button>,
+        ]}
       >
         <Form
           name="basic"
@@ -116,7 +215,7 @@ export const Home = () => {
         >
           <Form.Item
             label="Usuario"
-            name="usuario"
+            name="user"
             rules={[
               {
                 required: true,
@@ -127,7 +226,7 @@ export const Home = () => {
             <Input />
           </Form.Item>
           <Form.Item
-            name="cliente"
+            name="client"
             label="Cliente"
             rules={[
               {
@@ -135,17 +234,14 @@ export const Home = () => {
               },
             ]}
           >
-            <Select
-              placeholder="Seleccione un Cliente"
-              allowClear
-            >
-              <Option value="Angloamerican">Angloamerican</Option>
-              <Option value="Cacciuttolo">Cacciuttolo</Option>
-              <Option value="Cruzdelsur">Cruzdelsur</Option>
+            <Select placeholder="Seleccione un Cliente" allowClear>
+              {client.map(cli => (
+                <Option key={cli._id} value={cli.name}>{cli.name}</Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item
-            name="plataforma"
+            name="platform"
             label="Plataforma"
             rules={[
               {
@@ -153,13 +249,10 @@ export const Home = () => {
               },
             ]}
           >
-            <Select
-              placeholder="Seleccione una Plataforma"
-              allowClear
-            >
-              <Option value="Dispatcher">Dispatcher</Option>
-              <Option value="Control">Control</Option>
-              <Option value="Telemetría">Telemetría</Option>
+            <Select placeholder="Seleccione una Plataforma" allowClear>
+            {platform.map(pla => (
+              <Option key={pla._id} value={pla.name}>{pla.name}</Option>
+            ))}
             </Select>
           </Form.Item>
           <Form.Item

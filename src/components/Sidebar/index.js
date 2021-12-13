@@ -27,7 +27,7 @@ export const Sidebar = ({ children }) => {
             <Link to="/videos">Videos</Link>
           </Menu.Item>
           <Menu.Item key="3" icon={<UploadOutlined />}>
-            nav 3
+            <Link to="/mantenedor">Mantenedor</Link>
           </Menu.Item>
         </Menu>
       </Sider>
