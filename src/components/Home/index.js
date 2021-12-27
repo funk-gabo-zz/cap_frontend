@@ -94,14 +94,23 @@ export const Home = () => {
   };
 
   useEffect(() => {
+    let unmounted = false;
+    let source = axios.CancelToken.source();
     axios
-      .get("https://warm-temple-82704.herokuapp.com/cap")
+      .get("https://warm-temple-82704.herokuapp.com/cap", {
+        cancelToken: source.token,
+    })
       .then((response) => {
-        setCap(response.data);
+        if (!unmounted) {
+          setCap(response.data);
+        }
       })
       .catch((error) => {
         console.log(error);
       });
+      return () => {
+        unmounted = true;
+      }
   }, [cap]);
 
   useEffect(() => {
@@ -250,9 +259,9 @@ export const Home = () => {
             ]}
           >
             <Select placeholder="Seleccione una Plataforma" allowClear>
-            {platform.map(pla => (
-              <Option key={pla._id} value={pla.name}>{pla.name}</Option>
-            ))}
+              {platform.map(pla => (
+                <Option key={pla._id} value={pla.name}>{pla.name}</Option>
+              ))}
             </Select>
           </Form.Item>
           <Form.Item

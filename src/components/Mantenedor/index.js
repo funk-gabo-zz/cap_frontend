@@ -20,7 +20,7 @@ export const Mantenedor = () => {
     axios
       .post("https://warm-temple-82704.herokuapp.com/platform", values)
       .then(function (response) {
-          formPla.resetFields();
+        formPla.resetFields();
       })
       .catch(function (error) {
         console.log(error);
@@ -31,7 +31,7 @@ export const Mantenedor = () => {
     axios
       .post("https://warm-temple-82704.herokuapp.com/client", values)
       .then(function (response) {
-          formCli.resetFields();
+        formCli.resetFields();
       })
       .catch(function (error) {
         console.log(error);
@@ -48,24 +48,42 @@ export const Mantenedor = () => {
   };
 
   useEffect(() => {
+    let unmounted = false;
+    let source = axios.CancelToken.source();
     axios
-      .get("https://warm-temple-82704.herokuapp.com/client")
+      .get("https://warm-temple-82704.herokuapp.com/client", {
+        cancelToken: source.token,
+    })
       .then((response) => {
-        setClient(response.data);
+        if (!unmounted){
+          setClient(response.data);
+        }
       })
       .catch((error) => {
         console.log(error);
       });
+      return () => {
+        unmounted = true;
+      }
   }, [client]);
   useEffect(() => {
+    let unmounted = false;
+    let source = axios.CancelToken.source();
     axios
-      .get("https://warm-temple-82704.herokuapp.com/platform")
+      .get("https://warm-temple-82704.herokuapp.com/platform", {
+        cancelToken: source.token
+      })
       .then((response) => {
-        setPlatform(response.data);
+        if(!unmounted){
+          setPlatform(response.data);
+        }
       })
       .catch((error) => {
         console.log(error);
       });
+      return () => {
+        unmounted = true;
+      }
   }, [platform]);
   return (
     <FormsContainer>
