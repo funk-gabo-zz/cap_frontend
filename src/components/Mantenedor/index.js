@@ -6,6 +6,7 @@ import {
   ListContainer,
   ListBox,
   BoxName,
+  ListBoxContainer,
 } from "./style";
 import { useState, useEffect } from "react";
 
@@ -53,37 +54,37 @@ export const Mantenedor = () => {
     axios
       .get("https://warm-temple-82704.herokuapp.com/client", {
         cancelToken: source.token,
-    })
+      })
       .then((response) => {
-        if (!unmounted){
+        if (!unmounted) {
           setClient(response.data);
         }
       })
       .catch((error) => {
         console.log(error);
       });
-      return () => {
-        unmounted = true;
-      }
+    return () => {
+      unmounted = true;
+    };
   }, [client]);
   useEffect(() => {
     let unmounted = false;
     let source = axios.CancelToken.source();
     axios
       .get("https://warm-temple-82704.herokuapp.com/platform", {
-        cancelToken: source.token
+        cancelToken: source.token,
       })
       .then((response) => {
-        if(!unmounted){
+        if (!unmounted) {
           setPlatform(response.data);
         }
       })
       .catch((error) => {
         console.log(error);
       });
-      return () => {
-        unmounted = true;
-      }
+    return () => {
+      unmounted = true;
+    };
   }, [platform]);
   return (
     <FormsContainer>
@@ -109,14 +110,16 @@ export const Mantenedor = () => {
           </Form.Item>
         </Form>
         <ListContainer>
-          {platform.map((plat) => (
-            <ListBox key={plat._id}>
-              <BoxName>{plat.name}</BoxName>
-              <Button type="danger" onClick={() => handleDeletePla(plat._id)}>
-                Borrar
-              </Button>
-            </ListBox>
-          ))}
+          <ListBoxContainer>
+            {platform.map((plat) => (
+              <ListBox key={plat._id}>
+                <BoxName>{plat.name}</BoxName>
+                <Button type="danger" onClick={() => handleDeletePla(plat._id)}>
+                  Borrar
+                </Button>
+              </ListBox>
+            ))}
+          </ListBoxContainer>
         </ListContainer>
       </FormBox>
       <FormBox>
@@ -141,14 +144,16 @@ export const Mantenedor = () => {
           </Form.Item>
         </Form>
         <ListContainer>
-          {client.map((cli) => (
-            <ListBox key={cli._id}>
-              <BoxName>{cli.name}</BoxName>
-              <Button type="danger" onClick={() => handleDeleteCli(cli._id)}>
-                Borrar
-              </Button>
-            </ListBox>
-          ))}
+          <ListBoxContainer>
+            {client.map((cli) => (
+              <ListBox key={cli._id}>
+                <BoxName>{cli.name}</BoxName>
+                <Button type="danger" onClick={() => handleDeleteCli(cli._id)}>
+                  Borrar
+                </Button>
+              </ListBox>
+            ))}
+          </ListBoxContainer>
         </ListContainer>
       </FormBox>
     </FormsContainer>

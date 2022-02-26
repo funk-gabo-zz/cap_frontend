@@ -1,7 +1,8 @@
 import axios from "axios";
-import { Box, BoxContainer, Secc, NavButtons } from "./style";
-import { useState, useEffect } from "react";
+import { Box, BoxContainer, Secc, NavButtons, DeleteSpan } from "./style";
+import { useState, useEffect, Fragment } from "react";
 import { Table, Button, Modal, Input, Form, Select } from "antd";
+import { ExclamationCircleOutlined } from '@ant-design/icons'
 
 export const Home = () => {
   const [cap, setCap] = useState([]);
@@ -60,7 +61,7 @@ export const Home = () => {
       content: (
         <div>
           <ul>
-            {platform.map(plat => (
+            {platform.map((plat) => (
               <li key={plat._id}>{plat.name}</li>
             ))}
           </ul>
@@ -99,7 +100,7 @@ export const Home = () => {
     axios
       .get("https://warm-temple-82704.herokuapp.com/cap", {
         cancelToken: source.token,
-    })
+      })
       .then((response) => {
         if (!unmounted) {
           setCap(response.data);
@@ -108,9 +109,9 @@ export const Home = () => {
       .catch((error) => {
         console.log(error);
       });
-      return () => {
-        unmounted = true;
-      }
+    return () => {
+      unmounted = true;
+    };
   }, [cap]);
 
   useEffect(() => {
@@ -141,9 +142,11 @@ export const Home = () => {
       usuario: capacita.user,
       plataforma: capacita.platform,
       action: (
-        <span type="danger" onClick={() => handleDelete(capacita._id)}>
-          Delete
-        </span>
+        <Fragment>
+          <DeleteSpan type="danger" onClick={() => DeleteConfirm(capacita._id)}>
+            Delete
+          </DeleteSpan>
+        </Fragment>
       ),
     };
   });
@@ -170,6 +173,20 @@ export const Home = () => {
       key: "action",
     },
   ];
+
+  const DeleteConfirm = (id) => {
+      Modal.confirm({
+        title: 'Eliminar Capacitación',
+        icon: <ExclamationCircleOutlined />,
+        content: '¿Desea eliminar esta Capacitación?',
+        onOk() {
+          handleDelete(id)
+        },
+        onCancel() {
+          console.log('');
+        },
+      });
+  }
 
   return (
     <Secc>
@@ -244,8 +261,10 @@ export const Home = () => {
             ]}
           >
             <Select placeholder="Seleccione un Cliente" allowClear>
-              {client.map(cli => (
-                <Option key={cli._id} value={cli.name}>{cli.name}</Option>
+              {client.map((cli) => (
+                <Option key={cli._id} value={cli.name}>
+                  {cli.name}
+                </Option>
               ))}
             </Select>
           </Form.Item>
@@ -259,8 +278,10 @@ export const Home = () => {
             ]}
           >
             <Select placeholder="Seleccione una Plataforma" allowClear>
-              {platform.map(pla => (
-                <Option key={pla._id} value={pla.name}>{pla.name}</Option>
+              {platform.map((pla) => (
+                <Option key={pla._id} value={pla.name}>
+                  {pla.name}
+                </Option>
               ))}
             </Select>
           </Form.Item>

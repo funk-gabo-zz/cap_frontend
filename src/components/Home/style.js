@@ -45,3 +45,9 @@ export const NavButtons = styled.div`
   justify-content: flex-end;
   width: 100%;
 `;
+export const DeleteSpan = styled.span`
+  background-color: red;
+  padding: 5px;
+  cursor: pointer;
+  color: white;
+`;

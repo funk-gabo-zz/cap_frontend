@@ -13,7 +13,6 @@ export const FormBox = styled.div`
     padding: 15px;
     height:500px;
     background-color: #f1f1f1;
-    overflow-y: scroll;
 `
 
 export const ListContainer = styled.div`
@@ -28,7 +27,7 @@ export const ListContainer = styled.div`
 
 export const ListBox = styled.div`
     width: 100%;
-    height:48px;
+    height:39px;
     padding: 9px;
     background-color: #dfdfdf;
     display: flex;
@@ -40,4 +39,17 @@ export const BoxName = styled.div`
     display: flex;
     justify-content: center;
     width:100%;
+`
+
+export const ListBoxContainer = styled.div`
+    background-color: transparent;
+    overflow-y: scroll;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    width: 100%;
+    min-height: 20px;
+    max-height: 320px;
+    background-color: white;
+    gap:3px;
 `
